@@ -50,4 +50,28 @@ if __name__ == '__main__':
     svd_feature_matrix.head()
 
     pickle.dump(svd_feature_matrix, open("models/lsa_embeddings.pkl", "wb"))
+
+    #Use reviews, descriptions, and notes for vocabulary 
+    titles = df.title.values.tolist()
+    descriptions = df.description.values.tolist()
+    #notes = df.notes.values.tolist() #not using notes because sematics and order of list is not meaningfull. 
+
+    documents = []
+    for i in range(len(df)):
+        mystr = str(titles[i])
+        mystr = mystr + str(descriptions[i])
+        documents.append(re.sub("[^\w]", " ",  mystr).split())
     
+
+    formatted_documents = [gensim.models.doc2vec.TaggedDocument(doc, [i]) for i, doc in enumerate(documents)]
+
+    model = gensim.models.doc2vec.Doc2Vec(vector_size=25, min_count=5, epochs=20, seed=0, window=3, dm=1)
+    model.build_vocab(formatted_documents)
+    model.train(formatted_documents, total_examples=model.corpus_count, epochs=model.epochs)
+    fname = get_tmpfile("models/doc2vec_model")
+    model.save("models/doc2vec_model")
+    model = gensim.models.doc2vec.Doc2Vec.load("./models/doc2vec_model")
+    vector = model.infer_vector(doc_words=["this", "is", "a", "test"], epochs=50)
+    print(vector)
+    doctovec_feature_matrix = pd.DataFrame(model.docvecs.vectors_docs, index=df.title)
+    pickle.dump(doctovec_feature_matrix, open("models/doctovec_embeddings.pkl", "wb"))
