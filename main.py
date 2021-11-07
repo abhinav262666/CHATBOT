@@ -1,22 +1,38 @@
 # Parameters
 data_file = "Data/data_processed.csv"
-cnt_items = 3
+search_space = 1000
+retention  = 0.8
 
+from numpy.core.records import record
 from src.model import Retrieval_Model
 import pandas as pd
 
 model = Retrieval_Model()
 df = pd.read_csv(data_file)
 
-request = input("Hi, how may I help you? ")
+request  = input("Which product are you interested in? ")
+id_score = model.get_similar_items(request, search_space)
+ids = id_score.index.to_list()
+cur_score = id_score['ensemble_similarity']
+
+avg_score = dict()
+for i in range(search_space):
+    avg_score[ids[i]] = float(cur_score[i])
+
+print(df.head())
+
 while True:
-    records = model.get_similar_items(request, 3)
-    for i in range(cnt_items):
-        print("Item :", i+1)
-        title = records.index.tolist()[i]
-        similarity = records['ensemble_similarity'][i]
-        print("Title of product is ", title)
-        print("Score of the product is ", similarity)
-    details = input("Any further details? ")
-    if details == "exit": break
-    request += details
+    details = input("Noted. What else? ")
+    if details == "nothing":
+        suggested_id = max(zip(avg_score.values(), avg_score.keys()))[1]
+        print(suggested_id)
+        break
+
+    id_score = model.get_similar_items(details, search_space)
+    ids = id_score.index.to_list()
+    cur_score = id_score['ensemble_similarity']
+
+    for i in range(search_space):
+        if ids[i] not in cur_score:
+            avg_score[ids[i]] = 0
+        avg_score[ids[i]] = (1-retention)*float(id_score) + retention*cur_score[ids[i]]
