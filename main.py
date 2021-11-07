@@ -19,16 +19,17 @@ avg_score = dict()
 for i in range(search_space):
     avg_score[ids[i]] = float(cur_score[i])
 
-print(df.head())
 
 while True:
     details = input("Noted. What else? ")
     if details == "nothing":
         suggested_id = max(zip(avg_score.values(), avg_score.keys()))[1]
+        print(df.query('title==@suggested_id'))    
         print(suggested_id)
         break
 
     id_score = model.get_similar_items(details, search_space)
+    
     ids = id_score.index.to_list()
     cur_score = id_score['ensemble_similarity']
 
