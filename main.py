@@ -2,6 +2,7 @@
 processed_data_file = "Data/data_processed.csv"
 original_data_file = "Data/data1.csv"
 search_space = 1000
+no_of_products = 3
 retention  = 0.8
 
 from numpy.core.records import record
@@ -30,9 +31,13 @@ def print_product(product_id : str) -> None:
 while True:
     details = input("Noted. What else? ")
     if details == "nothing":
-        suggested_id = max(zip(avg_score.values(), avg_score.keys()))[1]
-        product_id = list(pdf.query('title==@suggested_id')['product_id'])[0]
-        print_product(product_id)
+        suggested_ids = sorted(avg_score, key=avg_score.get, reverse=True)[:no_of_products]
+        for i in range(no_of_products):
+            print("Product no ", i+1,":")
+            suggested_id = suggested_ids[i]
+            product_id = list(pdf.query('title==@suggested_id')['product_id'])[0]
+            print_product(product_id)
+            print()
         break
 
     id_score = model.get_similar_items(details, search_space)
