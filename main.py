@@ -8,7 +8,7 @@ exit_keywords = ["no", "exit", "finish", "done", "nothing", "no thanks"]
 start_sentences = [
     "Which product are you interested in?", 
     "Hi, let me help you find the product you are interested in:",
-    ]
+]
 details_sentences = [
     "Noted. What else?",
     "Go on:",
