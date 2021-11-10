@@ -20,12 +20,19 @@ from src.model import Retrieval_Model
 import pandas as pd
 import random
 
-model = Retrieval_Model()
+
 pdf = pd.read_csv(processed_data_file)
 odf = pd.read_csv(original_data_file)
 
 start_sentence = random.choice(start_sentences)
 request  = input(start_sentence+" ")
+
+max_price = input("Do you have any max price preferences ? : ")
+if(max_price.isnumeric()):
+    model = Retrieval_Model(int(max_price))
+else:
+    model = Retrieval_Model()
+
 id_score = model.get_similar_items(request, search_space)
 ids = id_score.index.to_list()
 cur_score = id_score['ensemble_similarity']

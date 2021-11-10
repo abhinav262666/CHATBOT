@@ -21,18 +21,34 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.decomposition import TruncatedSVD
 from scipy import sparse
+DOLLAR_RATE = 75
 
+def remove_dollar(text):
+    print(text)
+    text = re.sub("[^0-9.]", "", text)
+    if(len(text) > 10):
+        text = "0"
+    print(text)
+    return text
 
 class Retrieval_Model():
 
-    def __init__(self):
+    def __init__(self, maxprice = None):
         self.dv = Doc2Vec.load("models/doc2vec_model")
         self.tf = pickle.load(open("models/tfidf_model.pkl", "rb"))
         self.svd = pickle.load(open("models/svd_model.pkl", "rb"))
         self.svd_feature_matrix = pickle.load(open("models/lsa_embeddings.pkl", "rb"))
         self.doctovec_feature_matrix = pickle.load(open("models/doctovec_embeddings.pkl", "rb"))
         self.df = df = pd.read_csv("Data/data1.csv")
+        
+        if(maxprice):
+            self.df = self.df.dropna(subset=['price'])
+            self.df['price'] = self.df.price.apply(func=remove_dollar)
+            self.df['price'] = self.df.price.astype(np.float64)
+            self.df = self.df[self.df['price'] <= (maxprice/DOLLAR_RATE)]
+            print(self.df)
         self.hal = sia()
+
 
 
     @staticmethod
