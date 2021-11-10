@@ -41,11 +41,21 @@ avg_score = dict()
 for i in range(search_space):
     avg_score[ids[i]] = float(cur_score[i])
 
+def get_str_to_list(desc):
+    desc = desc.strip('[').strip(']').split(',')
+    return desc
 def print_product(product_id : str) -> None:
+    
     product = odf.query('product_id==@product_id')
-    print("Product Title", list(product['title'])[0])
-    print("Product Brand", list(product['brand'])[0])
-    print("Product Price", list(product['price'])[0])
+    
+    print("Product Title : ", list(product['title'])[0])
+    print("Product Brand : ", list(product['brand'])[0])
+    product_desc = get_str_to_list(list(product['feature'])[0])
+    for i, feature in enumerate(product_desc):
+        print(f"Feature {i} : {feature}")
+    
+    print("Product Price : ", list(product['price'])[0])
+
 
 while True:
     details_sentence = random.choice(details_sentences)

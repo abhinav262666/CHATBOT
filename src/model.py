@@ -1,4 +1,6 @@
+from logging import error
 import pandas as pd
+pd.options.mode.chained_assignment = None  # default='warn'
 import numpy as np
 import pickle
 from textwrap import wrap
@@ -24,11 +26,9 @@ from scipy import sparse
 DOLLAR_RATE = 75
 
 def remove_dollar(text):
-    print(text)
     text = re.sub("[^0-9.]", "", text)
     if(len(text) > 10):
-        text = "0"
-    print(text)
+        text = "10000000000000000000000"
     return text
 
 class Retrieval_Model():
@@ -39,14 +39,14 @@ class Retrieval_Model():
         self.svd = pickle.load(open("models/svd_model.pkl", "rb"))
         self.svd_feature_matrix = pickle.load(open("models/lsa_embeddings.pkl", "rb"))
         self.doctovec_feature_matrix = pickle.load(open("models/doctovec_embeddings.pkl", "rb"))
-        self.df = df = pd.read_csv("Data/data1.csv")
+        self.df = df = pd.read_csv("Data/data_processed.csv")
         
         if(maxprice):
             self.df = self.df.dropna(subset=['price'])
-            self.df['price'] = self.df.price.apply(func=remove_dollar)
-            self.df['price'] = self.df.price.astype(np.float64)
+            self.df.price = self.df.price.apply(func=remove_dollar)
+            self.df.price = self.df.price.astype(np.float64,errors = 'ignore')
             self.df = self.df[self.df['price'] <= (maxprice/DOLLAR_RATE)]
-            print(self.df)
+            
         self.hal = sia()
 
 
@@ -162,6 +162,9 @@ class Retrieval_Model():
         dissimilar_items = dissimilar_items.query('dissimilarity > .3')
         # remove items which customer do not want
         similar_items = similar_items.drop(dissimilar_items.index)
+        similar_items = similar_items[similar_items.index.isin(set(self.df['title']))]
+        similar_items = similar_items.reindex()
+        
         return similar_items.head(n)
 
     def view_recommendations(self, recs):
