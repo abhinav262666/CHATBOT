@@ -76,6 +76,6 @@ while True:
     cur_score = id_score['ensemble_similarity']
 
     for i in range(search_space):
-        if ids[i] not in cur_score:
+        if ids[i] not in avg_score:
             avg_score[ids[i]] = 0
-        avg_score[ids[i]] = (1-retention)*float(id_score) + retention*cur_score[ids[i]]
+        avg_score[ids[i]] = (retention)*float(avg_score[ids[i]]) + (1 - retention)*cur_score[i]
