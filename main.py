@@ -73,7 +73,7 @@ while True:
     id_score = model.get_similar_items(details, search_space)
     
     ids = id_score.index.to_list()
-    cur_score = id_score['ensemble_similarity']
+    cur_score = list(id_score['ensemble_similarity'])
 
     for i in range(search_space):
         if ids[i] not in avg_score:
