@@ -35,6 +35,14 @@ def print_product(product_id : str) -> None:
     res+="</span><br><span>"+"Product Price : "+str(list(product['price'])[0])
     return res
 
+def print_product_without_feature(product_id : str) -> None:
+    res = ""
+    product = odf.query('product_id==@product_id')
+    res+="</span><br><span>"+"Product Title : "+str(list(product['title'])[0])
+    res+="</span><br><span>"+"Product Brand : "+str(list(product['brand'])[0])
+    res+="</span><br><span>"+"Product Price : "+str(list(product['price'])[0])
+    return res
+
 def print_final_products(avg_score):
     res = ""
     res+="Final Product List According to your interests: "
@@ -54,7 +62,7 @@ def print_intermediate_products(avg_score):
         res+="</span><br><br><span>"+"Product no "+ str(i+1)+":"
         suggested_id = suggested_ids[i]
         product_id = list(pdf.query('title==@suggested_id')['product_id'])[0]
-        res+=print_product(product_id)
+        res+=print_product_without_feature(product_id)
     return res+"</span><br><br><span>"+random.choice(details_sentences)
 
 def price_asked(max_price):
