@@ -4,6 +4,8 @@ from numpy.core.records import record
 from src.model import Retrieval_Model
 import pandas as pd
 
+from main import *
+
 def get_str_to_list(desc):
     desc = desc.strip('[').strip(']').split(',')
     return desc
@@ -99,10 +101,11 @@ def chat(message):
     html += "</div>"
     return html
 
-iface = gr.Interface(chat, gr.inputs.Textbox(placeholder="Type here..."), "html", css="""
-    .chatbox {display:flex;flex-direction:column}
-    .user_msg, .resp_msg {padding:4px;margin-bottom:4px;border-radius:4px;width:80%}
-    .user_msg {background-color:cornflowerblue;color:white;align-self:start}
-    .resp_msg {background-color:lightgray;align-self:self-end}
-""", allow_screenshot=False, allow_flagging=False)
-iface.launch()
+if __name__ == "__main__":
+    iface = gr.Interface(chat, gr.inputs.Textbox(placeholder="Type here..."), "html", css="""
+        .chatbox {display:flex;flex-direction:column}
+        .user_msg, .resp_msg {padding:4px;margin-bottom:4px;border-radius:4px;width:80%}
+        .user_msg {background-color:cornflowerblue;color:white;align-self:start}
+        .resp_msg {background-color:lightgray;align-self:self-end}
+    """, allow_screenshot=False, allow_flagging=False)
+    iface.launch()
