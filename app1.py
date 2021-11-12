@@ -39,10 +39,10 @@ def bot(request, model, details):
         id_score = model.get_similar_items(details, search_space)
     
         ids = id_score.index.to_list()
-        cur_score = id_score['ensemble_similarity']
+        cur_score = list(id_score['ensemble_similarity'])
 
         for i in range(search_space):
-            if ids[i] not in cur_score:
+            if ids[i] not in avg_score:
                 avg_score[ids[i]] = 0
             avg_score[ids[i]] = (retention)*float(avg_score[ids[i]]) + (1 - retention)*cur_score[i]
 
